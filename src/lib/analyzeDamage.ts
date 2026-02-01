@@ -1,7 +1,5 @@
 import type { DamageResult, AnalysisResult } from "./types";
 
-const MOCK_DELAY_MS = 1800;
-
 const DEFAULT_RESULT: DamageResult = {
   severity: "low",
   type: "DIY",
@@ -9,20 +7,12 @@ const DEFAULT_RESULT: DamageResult = {
   repairStyle: "iFixit",
 };
 
-/** Prüft, ob das Bild als unscharf gelten soll (Vision AI – hier Mock via Dateiname; später echte Vision-API). */
-function detectBlur(image: File): boolean {
-  const name = (image.name ?? "").toLowerCase();
-  return name.includes("blur") || name.includes("unscharf");
-}
-
-/** Analysiert Video oder Bild. Video: wenn nicht auswertbar → needImages. Bild: wie bisher (blur, Schaden). */
+/** Analysiert Video oder Bild. Video: wenn nicht auswertbar → needImages. Bild: echte Vision-API (OpenAI) für Blur- und Schadensanalyse. */
 export async function analyzeDamage(file: File | null): Promise<AnalysisResult> {
-  await new Promise((resolve) => setTimeout(resolve, MOCK_DELAY_MS));
-
   if (!file) return DEFAULT_RESULT;
 
   const fileType = file.type ?? "";
-  
+
   const isVideo = fileType.startsWith("video/");
   if (isVideo) {
     return { needImages: true };
@@ -30,49 +20,31 @@ export async function analyzeDamage(file: File | null): Promise<AnalysisResult> 
 
   if (!fileType.startsWith("image/")) return DEFAULT_RESULT;
 
-  if (detectBlur(file)) {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await fetch("/api/analyze", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    console.error("Analyze API error:", err);
+    return DEFAULT_RESULT;
+  }
+
+  const data = await res.json();
+
+  if (data.blur === true) {
     return { blur: true };
   }
 
-  const name = file.name.toLowerCase();
-
-  // Profi route: extrem.png or "Rohrbruch"
-  if (name.includes("rohrbruch") || name.includes("extrem")) {
-    return {
-      severity: "high",
-      type: "Profi",
-      description: "Wasserschaden / Meisterpflicht",
-      repairStyle: "Plancraft",
-      action: "Push to Plancraft",
-    };
-  }
-
-  // Gig-Worker route: middle.png or "Siphon"
-  if (name.includes("siphon") || name.includes("middle")) {
-    return {
-      severity: "medium",
-      type: "Gig-Worker",
-      description: "Undichter Abfluss",
-      repairStyle: "Video-Support",
-    };
-  }
-
-  // DIY route: easy.png, Perlator, Armatur, Rohrsystem.
-  // Vision AI soll lernen: nicht nur Perlator, sondern ganzer Armatur-/Rohrbereich (siehe docs/vision-ai-knowledge-diy-rohrsystem.md).
-  if (
-    name.includes("perlator") ||
-    name.includes("easy") ||
-    name.includes("armatur") ||
-    name.includes("rohr") ||
-    name.includes("wasserhahn")
-  ) {
-    return {
-      severity: "low",
-      type: "DIY",
-      description: "Kalkablagerung / Armatur-Bereich (Rohrsystem, Perlator, Auslauf)",
-      repairStyle: "iFixit",
-    };
-  }
-
-  return DEFAULT_RESULT;
+  return {
+    severity: data.severity ?? "low",
+    type: data.type ?? "DIY",
+    description: data.description ?? DEFAULT_RESULT.description,
+    repairStyle: data.repairStyle ?? DEFAULT_RESULT.repairStyle,
+    ...(data.action ? { action: data.action } : {}),
+  };
 }

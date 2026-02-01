@@ -18,7 +18,7 @@ Upload a photo or short video of a home issue (e.g. plumbing, pipe damage). Get 
 
 - **Next.js 15** (App Router) · **React 19** · **TypeScript**
 - **Tailwind CSS** · **Framer Motion** · **Lucide** · **react-markdown**
-- Analysis is currently **mocked** in `src/lib/analyzeDamage.ts` (filename-based); ready to plug in a real Vision API.
+- **Image analysis** uses the **OpenAI Vision API** (GPT-4o) via `src/lib/analyzeDamage.ts` and `src/app/api/analyze/route.ts`. Blur detection and damage assessment are done from the actual image content, not the filename. An `OPENAI_API_KEY` is required (see [Quick start](#quick-start)).
 
 ---
 
@@ -35,6 +35,19 @@ npm run dev
 ```
 
 Open **http://localhost:3000**.
+
+### Image analysis (OpenAI Vision API)
+
+For real damage and blur analysis, set your OpenAI API key:
+
+1. Copy `.env.example` to `.env.local` if you don’t have it yet.
+2. In `.env.local`, set:
+   ```bash
+   OPENAI_API_KEY=your-openai-api-key
+   ```
+3. Restart the dev server. Image uploads are then analyzed by the OpenAI Vision API (GPT-4o).
+
+Without `OPENAI_API_KEY`, the analyze API returns an error and the app falls back to a default result.
 
 ### Optional: Voice agent (ElevenLabs)
 
@@ -63,8 +76,9 @@ Details: [docs/VOICE-AGENT-INTEGRATION.md](docs/VOICE-AGENT-INTEGRATION.md).
 ```
 src/
 ├── app/           # layout, page, globals
+│   └── api/analyze/   # POST /api/analyze — OpenAI Vision API for image analysis
 ├── components/    # ResultView, BlurResultView, PhotoAngleTile, VoiceAgentModal, UI, etc.
-└── lib/           # analyzeDamage, types, utils, voiceAgentConfig, mockGuides
+└── lib/           # analyzeDamage (calls API), types, utils, voiceAgentConfig, mockGuides
 docs/              # VOICE-AGENT-INTEGRATION.md, SETUP.md, vision-ai-knowledge-diy-rohrsystem.md
 public/image/      # Static images (tips, results, pipe angles)
 ```
