@@ -25,7 +25,7 @@ Upload a photo or short video of a home issue (e.g. plumbing, pipe damage). Get 
 ## Quick start
 
 **Prerequisites:** Node.js 18+ (LTS recommended).  
-If `npm` is not found, see [SETUP.md](SETUP.md) for install steps.
+If `npm` is not found, see [SETUP.md](docs/SETUP.md) for install steps.
 
 ```bash
 git clone <repo-url>
@@ -65,7 +65,7 @@ src/
 ├── app/           # layout, page, globals
 ├── components/    # ResultView, BlurResultView, PhotoAngleTile, VoiceAgentModal, UI, etc.
 └── lib/           # analyzeDamage, types, utils, voiceAgentConfig, mockGuides
-docs/              # VOICE-AGENT-INTEGRATION.md, vision/knowledge
+docs/              # VOICE-AGENT-INTEGRATION.md, SETUP.md, vision-ai-knowledge-diy-rohrsystem.md
 public/image/      # Static images (tips, results, pipe angles)
 ```
 

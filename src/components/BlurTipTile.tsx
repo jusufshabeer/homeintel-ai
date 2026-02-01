@@ -72,25 +72,25 @@ export function BlurTipTile() {
                 <p className="text-xs text-muted-foreground mb-2">
                   Von vorne. Von der Seite. Nah im Detail.
                 </p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-3">
                   {THREE_ANGLES.map((item, i) => (
                     <motion.div
                       key={item.label}
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.05 * i, duration: 0.2 }}
-                      className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm"
+                      className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm ring-1 ring-slate-100"
                     >
-                      <div className="relative aspect-[4/3] w-full bg-slate-50">
+                      <div className="relative aspect-[4/3] w-full bg-slate-100 overflow-hidden">
                         <Image
                           src={item.src}
                           alt={item.label}
                           fill
-                          className="object-contain p-1"
+                          className="object-contain p-2"
                           sizes="(max-width: 400px) 100px, 120px"
                         />
                       </div>
-                      <div className="p-2 text-center">
+                      <div className="p-2 text-center border-t border-slate-100">
                         <p className="font-medium text-slate-900 text-xs">
                           {item.label}
                         </p>
@@ -113,14 +113,14 @@ export function BlurTipTile() {
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.15, duration: 0.2 }}
-                    className="rounded-xl border-2 border-emerald-200 bg-emerald-50/80 overflow-hidden text-center"
+                    className="rounded-xl border-2 border-emerald-200 bg-emerald-50/80 overflow-hidden text-center shadow-sm"
                   >
-                    <div className="relative aspect-[4/3] w-full bg-white">
+                    <div className="relative aspect-[4/3] w-full bg-white overflow-hidden">
                       <Image
                         src="/image/ergebnis-gut.png"
                         alt="Beispiel: gutes Foto – scharf, Schaden erkennbar"
                         fill
-                        className="object-contain p-2"
+                        className="object-contain p-3"
                         sizes="(max-width: 400px) 140px, 180px"
                       />
                     </div>
@@ -142,14 +142,14 @@ export function BlurTipTile() {
                     initial={{ opacity: 0, x: 8 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2, duration: 0.2 }}
-                    className="rounded-xl border-2 border-slate-200 bg-slate-100/80 overflow-hidden text-center"
+                    className="rounded-xl border-2 border-slate-200 bg-slate-100/80 overflow-hidden text-center shadow-sm"
                   >
-                    <div className="relative aspect-[4/3] w-full bg-white">
+                    <div className="relative aspect-[4/3] w-full bg-white overflow-hidden">
                       <Image
                         src="/image/ergebnis-nicht-gut.png"
                         alt="Beispiel: nicht so gutes Foto – unscharf"
                         fill
-                        className="object-contain p-2"
+                        className="object-contain p-3"
                         sizes="(max-width: 400px) 140px, 180px"
                       />
                     </div>
